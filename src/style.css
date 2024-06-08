@@ -1,0 +1,17 @@
+html {
+    font-family: PingFangSC-Regular,Open Sans,Arial,Hiragino Sans GB,Microsoft YaHei,STHeiti,WenQuanYi Micro Hei,SimSun,sans-serif;
+    --sentinel-theme-height: 50px;
+}
+
+html, body, #app {
+    height: 100%;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+* {
+    box-sizing: border-box;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+}

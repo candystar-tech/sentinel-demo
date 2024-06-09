@@ -55,7 +55,9 @@ const reload = async (isFirstLoad = false) => {
         }
         emit("error", error)
     })
-    st.value.appendTo(captchaContainerRef.value)
+    if (currentLocalId.value == genLocalId) {
+        st.value.appendTo(captchaContainerRef.value)
+    }
 }
 
 onMounted(() => reload(true))

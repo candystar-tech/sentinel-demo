@@ -4,15 +4,17 @@ import { onMounted, ref, watch } from 'vue'
 const props = withDefaults(defineProps<{
     sitekey?: string,
     width?: string,
+    height?: string,
+    radius?: string,
     lang?: string
 }>(), {
     sitekey: "CSDEMO",
     width: "260px",
+    height: "50px",
+    radius: "4px",
     lang: "zh-cn"
 })
 const emit = defineEmits(["reload", "success", "error"])
-
-const initSentinel = (window as any).initSentinel
 
 const st = ref<any>(null)
 const loading = ref(true)
@@ -26,9 +28,11 @@ const reload = async (isFirstLoad = false) => {
     }
     const genLocalId = `${new Date().getTime()}${Math.random().toString(16).substring(2)}`
     currentLocalId.value = genLocalId
-    st.value = await initSentinel({
+    st.value = await (window as any).initSentinel({
         sitekey: props.sitekey,
         width: props.width,
+        height: props.height,
+        radius: props.radius,
         lang: props.lang,
         onMount: () => {
             if (currentLocalId.value !== genLocalId) {
@@ -66,7 +70,7 @@ watch(props, () => reload())
 
 <template>
     <div class="captcha-box" :style="{ 'width': width }">
-        <div class="wait" :class="{ show: loading }">
+        <div class="wait" :class="{ show: loading }" :style="{ 'height': height, 'border-radius': radius }">
             <div class="loading">
                 <div class="loading-dot"></div>
                 <div class="loading-dot"></div>
@@ -80,9 +84,7 @@ watch(props, () => reload())
 <style scoped lang="scss">
 .captcha-box {
     .wait.show {
-        height: var(--sentinel-theme-height, 50px);
         text-align: center;
-        border-radius: 2px;
         background-color: #f3f3f3;
 
         .loading {

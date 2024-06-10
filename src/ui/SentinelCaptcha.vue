@@ -83,7 +83,12 @@ watch(props, () => reload())
 
 <style scoped lang="scss">
 .captcha-box {
+    .wait {
+        display: none;
+    }
+
     .wait.show {
+        display: block;
         text-align: center;
         background-color: #f3f3f3;
 

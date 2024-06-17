@@ -3,9 +3,16 @@ import { provide, ref } from 'vue'
 import Header from './components/Header.vue'
 import Demo from './components/Demo.vue'
 import Footer from './components/Footer.vue'
+import SettingsPanel from './components/SettingsPanel.vue'
 
 const lang = ref("zh-cn")
 provide("lang", lang)
+
+const captchaType = ref("AI")
+provide("captchaType", captchaType)
+
+const product = ref("float")
+provide("product", product)
 </script>
 
 <template>
@@ -13,6 +20,7 @@ provide("lang", lang)
         <Header />
         <Demo />
         <Footer />
+        <SettingsPanel />
     </div>
 </template>
 

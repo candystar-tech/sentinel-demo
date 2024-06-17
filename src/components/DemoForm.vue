@@ -6,15 +6,59 @@ import StarBtn from '../ui/StarBtn.vue'
 import axios from 'axios'
 
 const lang = inject('lang') as Ref<string>
+const captchaType = inject('captchaType') as Ref<string>
+const product = inject('product') as Ref<"float" | "popup" | "bind">
+
+// 站点密钥，后台获取
+// 这里用DEMO密钥
+const sitekey = computed(() => {
+    if (captchaType.value == "AI") {
+        return "CSDEMO"
+    } else if (captchaType.value == "VTT") {
+        return "CSDEMOVTT"
+    } else if (captchaType.value == "SLIDE") {
+        return "CSDEMOSLIDE"
+    }
+})
+
+// 站点私钥，后台获取
+// 这里用DEMO密钥
+const secretkey = computed(() => {
+    if (captchaType.value == "AI") {
+        return ""
+    } else if (captchaType.value == "VTT") {
+        return "VTT"
+    } else if (captchaType.value == "SLIDE") {
+        return "SLIDE"
+    }
+})
 
 const strings = computed(() => {
     if (lang.value === 'en-us') {
         return {
-            login: "Login"
+            login: "Login",
+            verifyFail: "Verify Fail",
+            pleaseCompleteVerify: "Please complete the security verification",
+            downgrade: "Star Test maybe down, please try again later",
+            passStatus: "Verify Pass Status: ",
+            passed: "Pass",
+            notPassed: "Not Pass",
+            statusCode: "Status Code: ",
+            score: "Visitor Score: ",
+            verifyType: "Verify Type: "
         }
     } else {
         return {
-            login: "登录"
+            login: "登录",
+            verifyFail: "验证失败",
+            pleaseCompleteVerify: "请完成安全验证",
+            downgrade: "星验可能已宕机，验证码提示容灾降级",
+            passStatus: "验证通过状态：",
+            passed: "通过",
+            notPassed: "未通过",
+            statusCode: "状态码：",
+            score: "访客分值：",
+            verifyType: "验证类型："
         }
     }
 })
@@ -27,20 +71,34 @@ const twoStepCheck = async () => {
         return
     }
 
+    if (product.value == "bind") {
+        // 按钮绑定验证
+        const st = await (window as any).initSentinel({
+            sitekey: sitekey.value,
+            product: "bind"
+        })
+        const verifyResult = await st.verify()
+        if (verifyResult.error) {
+            alert(`${strings.value.verifyFail}\n${JSON.stringify(verifyResult.error)}`)
+            return
+        }
+        captchaOutput.value = verifyResult.result
+    }
+
     // 服务端二次验证
     // 本demo使用的是演示siteverify接口 /v0/xapi/demo/verify
     // 演示接口有ip和安全限制，线上中无法使用
     // 在您的项目中，
     // 请参考文档使用正式siteverify接口 /v0/siteverify
     if (captchaOutput.value == "") {
-        alert("请完成安全验证")
+        alert(strings.value.pleaseCompleteVerify)
         return
     }
     if (captchaOutput.value == ".DOWNGRADE") {
         // 出现此信息，或验证码返回结果不存在或者为空时
         // 在服务端应进行一次siteverify，传入参数全部为空
         // 如果确实是星验宕机（状态码非200），业务端应一键放行
-        alert("星验可能已宕机，验证码提示容灾降级")
+        alert(strings.value.downgrade)
         return
     }
     // 这里为了演示只尝试使用一个域名来验证
@@ -52,17 +110,17 @@ const twoStepCheck = async () => {
         const response = await axios.post("https://sentinel-api.startest.top/v0/xapi/demo/verify", {
             lot_number: outputJson?.lot_number || "",
             redeem_token: outputJson?.redeem_token || "",
-            secretkey: "" // 演示接口不需要传入密钥，实际使用需要传入
+            secretkey: secretkey.value
         })
         isChecking.value = false
         if (response.status !== 200) {
             throw new Error("status code not 200")
         }
-        alert(`验证通过状态：${response.data.success ? "验证通过" : "验证不通过"}\n状态码：${response.data.code}\n访客分数：${response.data.score}`)
+        alert(`${strings.value.passStatus}${response.data.success ? strings.value.passed : strings.value.notPassed}\n${strings.value.statusCode}${response.data.code}\n${strings.value.score}${response.data.score}\n${strings.value.verifyType}${response.data.verify_method}`)
         return
     } catch {
         isChecking.value = false
-        alert("二次验证失败，可能需要容灾降级")
+        alert(strings.value.downgrade)
         return
     }
 }
@@ -78,8 +136,10 @@ const twoStepCheck = async () => {
             <div class="pass"></div>
             <input type="password" autocomplete="off" placeholder="********" disabled />
         </div>
-        <SentinelCaptcha :lang="lang" @success="(r) => captchaOutput = r" @reload="captchaOutput = ''" />
-        <StarBtn class="btn" :class="{ 'disabled': isChecking }" @click="twoStepCheck()">{{ strings["login"] }}</StarBtn>
+        <SentinelCaptcha :lang="lang" :sitekey="sitekey" :product="product" v-if="product !== 'bind'"
+            @success="(r) => captchaOutput = r" @reload="captchaOutput = ''" />
+        <StarBtn class="btn" :class="{ 'disabled': isChecking }" @click="twoStepCheck()">{{ strings["login"] }}
+        </StarBtn>
     </form>
 </template>
 

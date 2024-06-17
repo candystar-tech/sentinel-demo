@@ -1,11 +1,16 @@
 <script setup lang="ts">
 import DemoForm from './DemoForm.vue'
+import { inject } from 'vue'
+import type { Ref } from 'vue'
+
+const lang = inject('lang') as Ref<string>
 </script>
 
 <template>
     <div class="demo-box">
         <div class="demo-box__bg">
-            <div class="demo-box__bg--tip">此为验证产品的 Demo 展示页面，非星验后台</div>
+            <div class="demo-box__bg--tip" v-if="lang == 'zh-cn'">此为验证产品的 Demo 展示页面，非星验后台</div>
+            <div class="demo-box__bg--tip" v-else-if="lang == 'en-us'">This is a demo, not the StarTest Console</div>
         </div>
         <div class="demo-box__form">
             <DemoForm />

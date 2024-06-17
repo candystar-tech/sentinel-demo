@@ -6,13 +6,15 @@ const props = withDefaults(defineProps<{
     width?: string,
     height?: string,
     radius?: string,
-    lang?: string
+    lang?: string,
+    product?: "float" | "popup"
 }>(), {
     sitekey: "CSDEMO",
     width: "260px",
     height: "50px",
     radius: "4px",
-    lang: "zh-cn"
+    lang: "zh-cn",
+    product: "float"
 })
 const emit = defineEmits(["reload", "success", "error"])
 
@@ -34,6 +36,7 @@ const reload = async (isFirstLoad = false) => {
         height: props.height,
         radius: props.radius,
         lang: props.lang,
+        product: props.product,
         onMount: () => {
             if (currentLocalId.value !== genLocalId) {
                 return

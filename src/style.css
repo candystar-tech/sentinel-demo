@@ -1,6 +1,5 @@
 html {
-    font-family: PingFangSC-Regular,Open Sans,Arial,Hiragino Sans GB,Microsoft YaHei,STHeiti,WenQuanYi Micro Hei,SimSun,sans-serif;
-    --sentinel-theme-height: 50px;
+    font-family: Arial,Helvetica Neue,Helvetica,PingFang SC,Hiragino Sans GB,Heiti SC,Microsoft YaHei,WenQuanYi Micro Hei,sans-serif;
 }
 
 html, body, #app {

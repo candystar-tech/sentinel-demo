@@ -1,8 +1,19 @@
+<script setup lang="ts">
+import { inject } from 'vue'
+import type { Ref } from 'vue'
+
+const lang = inject('lang') as Ref<string>
+</script>
+
 <template>
     <div class="footer">
-        <div class="left">
+        <div class="left" v-if="lang == 'zh-cn'">
             <a href="https://startest.top" target="_blank">星验官网</a>
             <a href="https://candystar.top" target="_blank">糖星官网</a>
+        </div>
+        <div class="left" v-else-if="lang == 'en-us'">
+            <a href="https://startest.top" target="_blank">Star Test Website</a>
+            <a href="https://candystar.top" target="_blank">Candy Star Website</a>
         </div>
         <div class="right">
             COPYRIGHT &copy; 2023-{{ new Date().getFullYear() }} STARTEST, INC.

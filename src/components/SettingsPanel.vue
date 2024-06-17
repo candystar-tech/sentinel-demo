@@ -114,6 +114,7 @@ const showPanel = ref(false)
 .panel {
     position: fixed;
     height: 100%;
+    width: 0;
 
     .showBtn {
         position: absolute;
